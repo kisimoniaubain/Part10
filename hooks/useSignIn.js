@@ -1,5 +1,6 @@
 import { useApolloClient, useMutation } from '@apollo/client';
 import { AUTHENTICATE } from '../graphql/mutations';
+import { ME } from '../graphql/queries';
 import AuthStorage from '../utils/authStorage';
 
 const useSignIn = () => {
@@ -20,7 +21,12 @@ const useSignIn = () => {
     const { accessToken } = response.data.authenticate;
 
     await authStorage.setAccessToken(accessToken);
+
     await apolloClient.resetStore();
+
+    await apolloClient.refetchQueries({
+      include: [ME],
+    });
 
     return response;
   };

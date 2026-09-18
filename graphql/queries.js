@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const GET_REPOSITORIES = gql`
+export const REPOSITORIES = gql`
   query {
     repositories {
       edges {
@@ -9,13 +9,22 @@ export const GET_REPOSITORIES = gql`
           fullName
           description
           language
-          forksCount
           stargazersCount
-          ratingAverage
+          forksCount
           reviewCount
+          ratingAverage
           ownerAvatarUrl
         }
       }
+    }
+  }
+`;
+
+export const ME = gql`
+  query {
+    me {
+      id
+      username
     }
   }
 `;
