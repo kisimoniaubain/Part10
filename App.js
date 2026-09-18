@@ -6,7 +6,7 @@ import {
 import Main from './Main';
 
 const client = new ApolloClient({
-  uri: 'http://192.168.1.225:4000',
+  uri: process.env.EXPO_PUBLIC_APOLLO_URI,
   cache: new InMemoryCache(),
 });
 
