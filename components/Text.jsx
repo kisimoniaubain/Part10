@@ -1,8 +1,12 @@
 import { Text as NativeText } from 'react-native';
+import theme from '../theme';
 
-const Text = ({ children, ...props }) => {
+const Text = ({ style, children, ...props }) => {
   return (
-    <NativeText {...props}>
+    <NativeText
+      style={[{ fontFamily: theme.fonts.main }, style]}
+      {...props}
+    >
       {children}
     </NativeText>
   );
