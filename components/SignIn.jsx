@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import useSignIn from '../hooks/useSignIn';
 import {
   View,
   Text,
@@ -50,6 +51,8 @@ const SignIn = () => {
     password: false,
   });
 
+  const [signIn] = useSignIn();
+
   const usernameError =
     touched.username && username.length === 0
       ? 'Username is required'
@@ -60,13 +63,15 @@ const SignIn = () => {
       ? 'Password is required'
       : null;
 
-  const onSubmit = () => {
-    const values = {
-      username,
-      password,
-    };
+  const onSubmit = async (values) => {
+    const { username, password } = values;
 
-    console.log(values);
+    try {
+      const { data } = await signIn({ username, password });
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleSubmit = () => {
@@ -79,7 +84,10 @@ const SignIn = () => {
       return;
     }
 
-    onSubmit();
+    onSubmit({
+      username,
+      password,
+    });
   };
 
   return (
