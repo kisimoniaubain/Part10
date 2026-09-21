@@ -3,9 +3,16 @@ import {
   Text,
   FlatList,
   StyleSheet,
+  Pressable,
+  Alert,
 } from 'react-native';
-import { useQuery } from '@apollo/client';
+import {
+  useQuery,
+  useMutation,
+} from '@apollo/client';
+import { useNavigate } from 'react-router-native';
 import { ME } from '../graphql/queries';
+import { DELETE_REVIEW } from '../graphql/mutations';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,16 +41,85 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     color: '#666666',
+    marginBottom: 15,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  button: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  viewButton: {
+    backgroundColor: '#0366d6',
+  },
+  deleteButton: {
+    backgroundColor: '#d73a49',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 
 const MyReviews = () => {
-  const { data, loading, error } = useQuery(ME, {
+  const navigate = useNavigate();
+
+  const {
+    data,
+    loading,
+    error,
+    refetch,
+  } = useQuery(ME, {
     variables: {
       includeReviews: true,
     },
     fetchPolicy: 'network-only',
   });
+
+  const [deleteReview] = useMutation(DELETE_REVIEW);
+
+  const handleDelete = (reviewId) => {
+    Alert.alert(
+      'Delete review',
+      'Are you sure you want to delete this review?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteReview({
+                variables: {
+                  id: reviewId,
+                },
+              });
+
+              await refetch();
+            } catch (deleteError) {
+              console.log(
+                'DELETE REVIEW ERROR:',
+                JSON.stringify(deleteError, null, 2),
+              );
+
+              Alert.alert(
+                'Error',
+                'Failed to delete the review.',
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
 
   if (loading) {
     return (
@@ -66,14 +142,10 @@ const MyReviews = () => {
     );
   }
 
-  console.log(
-    'MY REVIEWS DATA:',
-    JSON.stringify(data, null, 2),
-  );
-
-  const reviews = data?.me?.reviews?.edges?.map(
-    (edge) => edge.node,
-  ) || [];
+  const reviews =
+    data?.me?.reviews?.edges?.map(
+      (edge) => edge.node,
+    ) || [];
 
   const renderReview = ({ item }) => (
     <View style={styles.review}>
@@ -92,6 +164,34 @@ const MyReviews = () => {
       <Text style={styles.date}>
         {item.createdAt}
       </Text>
+
+      <View style={styles.actions}>
+        <Pressable
+          style={[
+            styles.button,
+            styles.viewButton,
+          ]}
+          onPress={() =>
+            navigate(`/repository/${item.repository.id}`)
+          }
+        >
+          <Text style={styles.buttonText}>
+            View repository
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.button,
+            styles.deleteButton,
+          ]}
+          onPress={() => handleDelete(item.id)}
+        >
+          <Text style={styles.buttonText}>
+            Delete review
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 
