@@ -4,9 +4,11 @@ import {
   StyleSheet,
   Pressable,
   Text,
+  TextInput,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useState } from 'react';
+import { useDebounce } from 'use-debounce';
 import { useNavigate } from 'react-router-native';
 import RepositoryItem from './RepositoryItem';
 import useRepositories from '../hooks/useRepositories';
@@ -24,6 +26,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  search: {
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 15,
+    backgroundColor: '#ffffff',
+  },
 });
 
 const ItemSeparator = () => (
@@ -31,12 +42,19 @@ const ItemSeparator = () => (
 );
 
 const RepositoryList = () => {
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [debouncedSearchKeyword] = useDebounce(
+    searchKeyword,
+    500,
+  );
+
   const [orderBy, setOrderBy] = useState('CREATED_AT');
   const [orderDirection, setOrderDirection] = useState('DESC');
 
   const { repositories } = useRepositories({
     orderBy,
     orderDirection,
+    searchKeyword: debouncedSearchKeyword,
   });
 
   const navigate = useNavigate();
@@ -68,7 +86,16 @@ const RepositoryList = () => {
       ItemSeparatorComponent={ItemSeparator}
       ListHeaderComponent={
         <View style={styles.header}>
-          <Text style={styles.label}>Sort repositories</Text>
+          <TextInput
+            style={styles.search}
+            placeholder="Search repositories"
+            value={searchKeyword}
+            onChangeText={setSearchKeyword}
+          />
+
+          <Text style={styles.label}>
+            Sort repositories
+          </Text>
 
           <Picker
             selectedValue={
