@@ -36,11 +36,12 @@ const ItemSeparator = () => (
 const RepositoryView = () => {
   const { id } = useParams();
 
-  const { data, loading, error } = useQuery(REPOSITORY, {
-    variables: {
-      id,
-    },
-  });
+const { data, loading, error } = useQuery(REPOSITORY, {
+  variables: {
+    id,
+  },
+  fetchPolicy: 'cache-and-network',
+});
 
   if (loading) {
     return (

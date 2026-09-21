@@ -1,4 +1,9 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import { Link } from 'react-router-native';
 import { useQuery } from '@apollo/client';
 import Constants from 'expo-constants';
@@ -43,13 +48,26 @@ const AppBar = () => {
           </Link>
 
           {data?.me ? (
-            <Link
-              to="/"
-              style={styles.tab}
-              onPress={handleSignOut}
-            >
-              <Text style={styles.text}>Sign out</Text>
-            </Link>
+            <>
+              <Link
+                to="/create-review"
+                style={styles.tab}
+              >
+                <Text style={styles.text}>
+                  Create a review
+                </Text>
+              </Link>
+
+              <Link
+                to="/"
+                style={styles.tab}
+                onPress={handleSignOut}
+              >
+                <Text style={styles.text}>
+                  Sign out
+                </Text>
+              </Link>
+            </>
           ) : (
             <Link to="/signin" style={styles.tab}>
               <Text style={styles.text}>Sign in</Text>
