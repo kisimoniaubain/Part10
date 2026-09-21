@@ -1,146 +1,24 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-native';
 import useSignIn from '../hooks/useSignIn';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 15,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 5,
-    backgroundColor: '#ffffff',
-    fontSize: 16,
-  },
-  inputError: {
-    borderColor: '#d73a4a',
-  },
-  error: {
-    color: '#d73a4a',
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#0366d6',
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
+import SignInContainer from './SignInContainer';
 
 const SignIn = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const [touched, setTouched] = useState({
-    username: false,
-    password: false,
-  });
-
   const [signIn] = useSignIn();
   const navigate = useNavigate();
 
-  const usernameError =
-    touched.username && username.length === 0
-      ? 'Username is required'
-      : null;
+  const onSubmit = async (values) => {
+    const { username, password } = values;
 
-  const passwordError =
-    touched.password && password.length === 0
-      ? 'Password is required'
-      : null;
-
-const onSubmit = async (values) => {
-  const { username, password } = values;
-
-  try {
-    const { data } = await signIn({ username, password });
-    console.log(data);
-    console.log('Navigating to repositories...');
-    navigate('/');
-  } catch (e) {
-    console.log('Sign in error:', e);
-  }
-};
-  const handleSubmit = () => {
-    setTouched({
-      username: true,
-      password: true,
-    });
-
-    if (username.length === 0 || password.length === 0) {
-      return;
+    try {
+      const { data } = await signIn({ username, password });
+      console.log(data);
+      navigate('/');
+    } catch (e) {
+      console.log('Sign in error:', e);
     }
-
-    onSubmit({
-      username,
-      password,
-    });
   };
 
-  return (
-    <View style={styles.container}>
-      <TextInput
-        style={[
-          styles.input,
-          usernameError && styles.inputError,
-        ]}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        onBlur={() =>
-          setTouched((previous) => ({
-            ...previous,
-            username: true,
-          }))
-        }
-      />
-
-      {usernameError && (
-        <Text style={styles.error}>{usernameError}</Text>
-      )}
-
-      <TextInput
-        style={[
-          styles.input,
-          passwordError && styles.inputError,
-        ]}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        onBlur={() =>
-          setTouched((previous) => ({
-            ...previous,
-            password: true,
-          }))
-        }
-      />
-
-      {passwordError && (
-        <Text style={styles.error}>{passwordError}</Text>
-      )}
-
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Sign in</Text>
-      </Pressable>
-    </View>
-  );
+  return <SignInContainer onSubmit={onSubmit} />;
 };
 
 export default SignIn;
