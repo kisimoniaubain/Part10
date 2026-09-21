@@ -59,6 +59,15 @@ const AppBar = () => {
               </Link>
 
               <Link
+                to="/my-reviews"
+                style={styles.tab}
+              >
+                <Text style={styles.text}>
+                  My reviews
+                </Text>
+              </Link>
+
+              <Link
                 to="/"
                 style={styles.tab}
                 onPress={handleSignOut}

@@ -6,6 +6,7 @@ import RepositoryView from './components/RepositoryView';
 import SignIn from './components/SignIn';
 import CreateReview from './components/CreateReview';
 import SignUp from './components/SignUp';
+import MyReviews from './components/MyReviews';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,6 +37,11 @@ const Main = () => {
           />
 
           <Route path="/signup" element={<SignUp />} />
+
+          <Route
+            path="/my-reviews"
+            element={<MyReviews />}
+          />
         </Routes>
       </View>
     </NativeRouter>
